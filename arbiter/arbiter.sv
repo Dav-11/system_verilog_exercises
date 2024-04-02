@@ -1,8 +1,15 @@
 module arbiter #(
     parameter int num_master = 4
-) (req,pri,grant,clk);
+) (
+    req,
+    pri,
+    grant,
+    clk,
+    rst
+);
 
     input   logic                   clk;
+    input   logic                   rst;
     input   logic [num_master-1:0]  req;
     input   logic [num_master-1:0]  pri;
     output  logic [num_master-1:0]  grant;
@@ -12,20 +19,19 @@ module arbiter #(
     logic [num_master-1:0]      skip;
 
     assign pri_ext = {pri,pri};
-
-    always_comb begin
-        
-        grant   = '0;
-        found   = '0;
-        skip    = '0; 
     
-        // genvar for loop iteration
-        genvar i;
-        generate
-            for (int i = 0; i < num_master; i++) begin
+    // genvar for loop iteration
+    genvar i;
+    generate
+        for (i = 0; i < num_master; i++) begin
+        
+            always_comb begin
+                
+                found[i]   = '0;
+                skip[i]    = '0;
                 
                 // req1: request exists
-                if (request[i]) begin
+                if (req[i]) begin
 
                     //
                     // req2: No request from blocking
@@ -35,7 +41,7 @@ module arbiter #(
 
                         // this has max priority -> ignore others
                         grant[i] = 1;
-                    else
+                    end else begin
                         
                         // check if any other element has higher prio + req
                         for (int j = (i + 1); j < (num_master+i); j++) begin
@@ -53,14 +59,25 @@ module arbiter #(
                             end
 
                         end
-
-                        if(!skip[i]) begin
-                            grant[i] = 1;
-                        end
                     end
                 end
             end
-        endgenerate
-    end
+            
+            always_ff@(posedge clk) begin
+                if(rst) begin
+                    grant   <= '0;
+                    found   <= '0;
+                    skip    <= '0;
+                    
+                end else begin
 
+                    if(!skip[i]) begin
+                        grant[i] <= 1;
+                    end
+                end
+            end
+        end
+    endgenerate
+
+endmodule
 
