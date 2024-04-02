@@ -13,3 +13,6 @@ make
 sudo make install
 
 pip install sootty
+pip install yowasp-yosys
+pip install teroshdl
+pip install vunit_hdl
