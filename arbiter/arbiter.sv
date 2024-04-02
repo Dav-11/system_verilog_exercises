@@ -27,8 +27,8 @@ module arbiter #(
         
             always_comb begin
                 
-                found[i]   = '0;
-                skip[i]    = '0;
+                found[i]   = 0;
+                skip[i]    = 0;
                 
                 // req1: request exists
                 if (req[i]) begin
@@ -37,25 +37,27 @@ module arbiter #(
                     // req2: No request from blocking
                     //
 
-                    if (pri[i]) begin
+                    // if i has max prio => leave skip to 0
 
-                        // this has max priority -> ignore others
-                        grant[i] = 1;
-                    end else begin
+                    // else
+                    if (!pri[i]) begin
                         
                         // check if any other element has higher prio + req
                         for (int j = (i + 1); j < (num_master+i); j++) begin
 
-                            // if has req and (the max prio elem is between i and j or the max prio elem is j)
-                            if(req[i] && (found[i] || pri_ext[j])) begin
+                            if(!skip[i]) begin
 
-                                // found req w/ higher prio => skip i
-                                skip[i] = 1;
-                                break;
-                            end
+                                // if has req and (the max prio elem is between i and j or the max prio elem is j)
+                                if(req[i] && (found[i] || pri_ext[j])) begin
 
-                            if(pri_ext[j]) begin
-                                found[i] = 1;
+                                    // found req w/ higher prio => skip i
+                                    skip[i] = 1;
+                                end
+
+                                if(pri_ext[j]) begin
+                                    found[i] = 1;
+                                end
+
                             end
 
                         end
@@ -71,8 +73,15 @@ module arbiter #(
                     
                 end else begin
 
-                    if(!skip[i]) begin
-                        grant[i] <= 1;
+                    if (req[i]) begin
+
+                        if(!skip[i]) begin
+                            grant[i] <= 1;
+                        end else begin
+                            grant[i] <= 0;
+                        end
+                    end else begin
+                        grant[i] <= 0;
                     end
                 end
             end
