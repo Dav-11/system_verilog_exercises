@@ -1,3 +1,5 @@
 arbiter
 *.svg
 *.vcd
+a.out
+sym

@@ -36,7 +36,12 @@ module arbiter_tb;
     req <= 'b0110;
     pri <= 'b0010;
 
-    #6
+    #10
+    rst <= 0;
+    req <= 'b0110;
+    pri <= 'b1000;
+
+    #10
     rst <= 1;
 
     # 10
