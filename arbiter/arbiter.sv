@@ -47,14 +47,14 @@ module arbiter #(
                         for (int j = (i + 1); j < (num_master+i); j++) begin
 
                             // if has req and (the max prio elem is between i and j or the max prio elem is j)
-                            if(req[i] && (found[i] || pri[j])) begin
+                            if(req[i] && (found[i] || pri_ext[j])) begin
 
                                 // found req w/ higher prio => skip i
                                 skip[i] = 1;
                                 break;
                             end
 
-                            if(pri[j]) begin
+                            if(pri_ext[j]) begin
                                 found[i] = 1;
                             end
 
