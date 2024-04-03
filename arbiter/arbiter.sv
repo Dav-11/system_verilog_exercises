@@ -49,15 +49,16 @@ module arbiter #(
 
                             if(!skip[i]) begin
 
+                                // if j has max prio -> set found to 1
+                                if(pri_ext[j+i]) begin
+                                    found[i] = 1;
+                                end
+
                                 // if has req and (the max prio elem is between i and j or the max prio elem is j)
-                                if(req_ext[j+i] && (found[i] || pri_ext[j+i])) begin
+                                if(req_ext[j+i] && (found[i])) begin
 
                                     // found req w/ higher prio => skip i
                                     skip[i] = 1;
-                                end
-
-                                if(pri_ext[j+i]) begin
-                                    found[i] = 1;
                                 end
 
                             end
@@ -77,12 +78,9 @@ module arbiter #(
 
                     if (req[i]) begin
 
-                        if(!skip[i]) begin
-                            grant[i] <= 1;
-                        end else begin
-                            grant[i] <= 0;
-                        end
+                        grant[i] <= !skip[i];
                     end else begin
+
                         grant[i] <= 0;
                     end
                 end

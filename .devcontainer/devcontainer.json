@@ -6,6 +6,14 @@
 	"image": "mcr.microsoft.com/devcontainers/base:jammy",
 	"features": {
 		"ghcr.io/devcontainers/features/python:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"wavetrace.wavetrace",
+				"mshr-h.veriloghdl"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
