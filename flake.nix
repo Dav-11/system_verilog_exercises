@@ -2,27 +2,29 @@
   description = "SystemVerilog development environment with Neovim and Icarus Verilog";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, flake-utils }: 
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; };
-      in {
-        devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            neovim
-            icarus-verilog
-            verilator
-            gtkwave
-            (pkgs.python3.withPackages (ps: with ps; [ pyverilog ]))
-          ];
-
-          shellHook = ''
-            echo "SystemVerilog development environment loaded."
-          '';
-        };
-      });
+  outputs = { self, nixpkgs }: let
+    supportedSystems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
+    forAllSystems = f: builtins.listToAttrs (map (system: {
+      name = system;
+      value = f system;
+    }) supportedSystems);
+  in {
+    devShells = forAllSystems (system: let
+      pkgs = import nixpkgs { inherit system; };
+    in {
+      default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          neovim
+          helix
+          gtkwave
+          iverilog
+          verilator
+        ];
+        shellHook = "exec zsh";
+      };
+    });
+  };
 }
