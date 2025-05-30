@@ -22,6 +22,7 @@
           gtkwave
           iverilog
           verilator
+          verible
         ];
         shellHook = "exec zsh";
       };
