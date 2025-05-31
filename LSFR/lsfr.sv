@@ -1,5 +1,5 @@
 module lsfr (d_i, d_o, clk, rss);
-  
+
   input   logic         clk;
   input   logic         rss;
   input   logic         d_i;

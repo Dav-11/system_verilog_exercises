@@ -1,5 +1,7 @@
-module top_module(zero);
-    
+module top_module (
+    zero
+);
+
     output logic zero;
 
-endmodule: top_module
+endmodule : top_module

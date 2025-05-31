@@ -23,7 +23,5 @@ module tb_lsfr ();
         d_o <= '0;
         d_i <= '0;
 
-        
+
     end
-
-

@@ -8,30 +8,30 @@ module arbiter #(
     rst
 );
 
-    input   logic                   clk;
-    input   logic                   rst;
-    input   logic [num_master-1:0]  req;
-    input   logic [num_master-1:0]  pri;
-    output  logic [num_master-1:0]  grant;
+    input logic clk;
+    input logic rst;
+    input logic [num_master-1:0] req;
+    input logic [num_master-1:0] pri;
+    output logic [num_master-1:0] grant;
 
-    logic [(2*num_master)-1:0]  pri_ext;
-    logic [(2*num_master)-1:0]  req_ext;
-    logic [num_master-1:0]      found;
-    logic [num_master-1:0]      skip;
+    logic [(2*num_master)-1:0] pri_ext;
+    logic [(2*num_master)-1:0] req_ext;
+    logic [    num_master-1:0] found;
+    logic [    num_master-1:0] skip;
 
-    assign pri_ext = {pri,pri};
-    assign req_ext = {req,req};
-    
+    assign pri_ext = {pri, pri};
+    assign req_ext = {req, req};
+
     // genvar for loop iteration
     genvar i;
     generate
         for (i = 0; i < num_master; i++) begin
-        
+
             always_comb begin
-                
-                found[i]   = 0;
-                skip[i]    = 0;
-                
+
+                found[i] = 0;
+                skip[i]  = 0;
+
                 // req1: request exists
                 if (req[i]) begin
 
@@ -43,19 +43,19 @@ module arbiter #(
 
                     // else
                     if (!pri[i]) begin
-                        
+
                         // check if any other element has higher prio + req
                         for (int j = 1; j < num_master; j++) begin
 
-                            if(!skip[i]) begin
+                            if (!skip[i]) begin
 
                                 // if j has max prio -> set found to 1
-                                if(pri_ext[j+i]) begin
+                                if (pri_ext[j+i]) begin
                                     found[i] = 1;
                                 end
 
                                 // if has req and (the max prio elem is between i and j or the max prio elem is j)
-                                if(req_ext[j+i] && (found[i])) begin
+                                if (req_ext[j+i] && (found[i])) begin
 
                                     // found req w/ higher prio => skip i
                                     skip[i] = 1;
@@ -67,13 +67,13 @@ module arbiter #(
                     end
                 end
             end
-            
-            always_ff@(posedge clk) begin
-                if(rst) begin
-                    grant   <= '0;
+
+            always_ff @(posedge clk) begin
+                if (rst) begin
+                    grant <= '0;
                     //found   <= '0;
                     //skip    <= '0;
-                    
+
                 end else begin
 
                     if (req[i]) begin
@@ -89,4 +89,3 @@ module arbiter #(
     endgenerate
 
 endmodule
-
