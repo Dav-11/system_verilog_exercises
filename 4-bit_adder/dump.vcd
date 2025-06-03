@@ -1,0 +1,117 @@
+$date
+   Tue Jun  3 17:05:26 2025
+$end
+
+$version
+  2024.2.0
+$end
+
+$timescale
+  10ps
+$end
+
+$scope module tb_adder $end
+$var reg 1 ' clk $end
+$var parameter 32 ( HALF_CLK [31:0] $end
+$scope module bus $end
+$var reg 1 # rst $end
+$var reg 4 ! a [3:0] $end
+$var reg 4 " b [3:0] $end
+$var reg 4 $ sum [3:0] $end
+$var reg 1 % carry $end
+$var parameter 32 & WIDTH [31:0] $end
+$scope module adder $end
+$var reg 4 ! a [3:0] $end
+$var reg 4 " b [3:0] $end
+$var reg 1 # rst $end
+$var reg 4 $ sum [3:0] $end
+$var reg 1 % carry $end
+$upscope $end
+$scope module tb $end
+$var reg 4 $ sum [3:0] $end
+$var reg 1 % carry $end
+$var reg 4 ! a [3:0] $end
+$var reg 4 " b [3:0] $end
+$var reg 1 # rst $end
+$upscope $end
+$upscope $end
+$scope module dut $end
+$scope module bus $end
+$var reg 1 # rst $end
+$var reg 4 ! a [3:0] $end
+$var reg 4 " b [3:0] $end
+$var reg 4 $ sum [3:0] $end
+$var reg 1 % carry $end
+$var parameter 32 & WIDTH [31:0] $end
+$scope module adder $end
+$var reg 4 ! a [3:0] $end
+$var reg 4 " b [3:0] $end
+$var reg 1 # rst $end
+$var reg 4 $ sum [3:0] $end
+$var reg 1 % carry $end
+$upscope $end
+$scope module tb $end
+$var reg 4 $ sum [3:0] $end
+$var reg 1 % carry $end
+$var reg 4 ! a [3:0] $end
+$var reg 4 " b [3:0] $end
+$var reg 1 # rst $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+
+#0
+$dumpvars
+b0 !
+b0 "
+1#
+b0 $
+0%
+b100 &
+0'
+b1 (
+$end
+
+#100
+1'
+
+#200
+b10 !
+b11 "
+0#
+b101 $
+0'
+
+#300
+1'
+
+#400
+b1111 !
+b1 "
+b0 $
+1%
+0'
+
+#500
+1'
+
+#600
+0'
+
+#700
+1'
+
+#800
+$dumpoff
+x'
+x#
+bx !
+bx "
+bx $
+x%
+bx (
+bx &
+$end
+

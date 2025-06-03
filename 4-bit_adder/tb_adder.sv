@@ -4,7 +4,7 @@
 // `include "adder.sv"
 
 module tb_adder ();
-    parameter HALF_CLK = 5;
+    parameter HALF_CLK = 1;
 
     adder_if #(4) bus ();
     logic clk = 0;
@@ -29,16 +29,22 @@ module tb_adder ();
         bus.a <= '0;
         bus.b <= '0;
 
-        #10 $strobe("sum=%b, cout=%b", bus.sum, bus.carry);
+        $strobe("sum=%b, cout=%b", bus.sum, bus.carry);
 
-        #5 bus.rst <= 0;
+        #2 bus.rst <= 0;
         bus.a <= 4'b0010;
+        bus.b <= 4'b0011;
+
+        $strobe("sum=%b, cout=%b", bus.sum, bus.carry);
+
+        // reset
+        // #2 bus.rst <= 1;
+        
+        #2 bus.rst <= 0;
+        bus.a <= 4'b1111;
         bus.b <= 4'b0001;
-
-        #10 $strobe("sum=%b, cout=%b", bus.sum, bus.carry);
-
-        // Add more test vectors here
-
+        
+        #4 // delay
         $finish;
     end
 
