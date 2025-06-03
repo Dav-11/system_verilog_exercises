@@ -11,4 +11,4 @@ interface adder_if #(
     modport adder(input a, b, rst, output sum, carry);
     modport tb(input sum, carry, output a, b, rst);
 
-endinterface
+endinterface : adder_if

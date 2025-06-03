@@ -9,4 +9,4 @@ module adder (
         else {bus.carry, bus.sum} = bus.a + bus.b;
     end
 
-endmodule
+endmodule : adder

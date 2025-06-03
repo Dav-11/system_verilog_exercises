@@ -1,7 +1,7 @@
 # Makefile for 4-bit_adder simulation with Verilator
 
 # Verilator options
-VERILATOR_FLAGS := --cc --exe --trace --build --relative-includes --no-timing --Wno-fatal
+VERILATOR_FLAGS := --cc --exe --trace --build --relative-includes --timing --Wno-fatal
 
 # Source files
 TOP_MODULE := tb_adder
