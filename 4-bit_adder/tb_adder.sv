@@ -6,7 +6,7 @@
 module tb_adder ();
     parameter HALF_CLK = 1;
 
-    adder_if #(4) bus ();
+    adder_if.tb bus;
     logic clk = 0;
 
     adder dut (.bus(bus));
