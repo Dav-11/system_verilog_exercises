@@ -1,6 +1,11 @@
-interface adder_if #(
-    parameter WIDTH = 4
-);
+package adder_pkg;
+    parameter WIDTH = 4;
+endpackage : adder_pkg
+
+
+
+interface adder_if;
+    import adder_pkg::*;
     logic rst;
     logic [WIDTH -1:0] a;
     logic [WIDTH -1:0] b;
