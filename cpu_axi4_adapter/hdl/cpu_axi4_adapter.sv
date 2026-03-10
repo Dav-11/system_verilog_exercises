@@ -80,5 +80,31 @@ module cpu_axi4_adapter #(
     end
   end
 
+  always_comb begin
+
+    unique case (state_r)
+
+      IDLE: begin
+
+      end
+      WRITE_ADDR: begin
+
+      end
+      WRITE_DATA: begin
+
+      end
+      WRITE_RESP: begin
+
+      end
+      READ_ADDR: begin
+
+      end
+      READ_DATA: begin
+
+      end
+    endcase
+
+  end
+
 
 endmodule : cpu_axi4_adapter
