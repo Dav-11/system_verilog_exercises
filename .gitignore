@@ -10,3 +10,7 @@
 # deps
 venv
 iverilog
+
+# DVT
+**/.dvt
+**/dvt_build.log
