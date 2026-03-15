@@ -78,6 +78,8 @@ module cpu_axi4_adapter #(
   localparam int CPU_BYTE_LSB = $clog2(CPU_BYTES);
   localparam int AXI_BYTE_LSB = $clog2(AXI_BYTES);
 
+  localparam int LANE_BITS = AXI_BYTE_LSB - CPU_BYTE_LSB;
+
   // AXI size = log2(bytes per beat)
   localparam logic [2:0] AXI_SIZE = $clog2(AXI_BYTES);
 
@@ -108,7 +110,7 @@ module cpu_axi4_adapter #(
   logic [CPU_DW-1:0] wdata_r, wdata_n;
   logic [(CPU_DW/8)-1:0] sel_r, sel_n;
 
-  logic [AXI_BYTE_LSB-CPU_BYTE_LSB-1:0] lane;
+  logic [LANE_BITS-1:0] lane;
 
 
   always_ff @(posedge clk) begin
@@ -137,8 +139,13 @@ module cpu_axi4_adapter #(
     // ======================================
 
     // internal signals
-    state_n  = state_r;
-    lane     = addr_r[AXI_BYTE_LSB-1:CPU_BYTE_LSB];
+    state_n = state_r;
+
+    if (LANE_BITS > 0) begin
+      lane = addr_r[AXI_BYTE_LSB-1:CPU_BYTE_LSB];
+    end else begin
+      lane = '0;
+    end
 
     // input
     addr_n   = addr_r;
@@ -216,8 +223,8 @@ module cpu_axi4_adapter #(
         w_last = 1'b1;  // always 1 beat
 
         // Pack write data into AXI beat
-        w_data[lane*CPU_DW+:CPU_DW] = wdata_r;
-        w_strb[lane*CPU_BYTES+:CPU_BYTES] = sel_r;
+        w_data[lane*CPU_DW+CPU_DW-1-:CPU_DW] = wdata_r;
+        w_strb[lane*CPU_BYTES+CPU_BYTES-1-:CPU_BYTES] = sel_r;
 
         if (w_ready) begin
           state_n = WRITE_RESP;
@@ -258,7 +265,7 @@ module cpu_axi4_adapter #(
 
           if (r_resp == 2'b00 || r_resp == 2'b01) begin
 
-            rdata = r_data[lane*CPU_DW+:CPU_DW];
+            rdata = r_data[lane*CPU_DW+CPU_DW-1-:CPU_DW];
 
             if (r_last) begin
               ack = 1'b1;

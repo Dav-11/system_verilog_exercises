@@ -3,10 +3,10 @@
 module tb_cpu_axi4_adapter;
 
   // Parameters (match your DUT)
-  localparam AW = 32;
-  localparam CPU_DW = 64;
+  localparam AW = 16;
+  localparam CPU_DW = 32;
   localparam AXI_ID_WIDTH = 8;
-  localparam AXI_DATA_WIDTH = 256;
+  localparam AXI_DATA_WIDTH = 32;
 
   // Clock & reset
   logic clk;
@@ -106,29 +106,61 @@ module tb_cpu_axi4_adapter;
       .r_ready(r_ready)
   );
 
-  // ================= Simple AXI memory model =================
-  localparam MEM_SIZE = 32;  // reduce memory to 32 rows
-  logic [AXI_DATA_WIDTH-1:0] mem[0:MEM_SIZE-1];
+  axi_ram #(
+      .DATA_WIDTH(AXI_DATA_WIDTH),
+      .ADDR_WIDTH(AW),
+      .ID_WIDTH  (AXI_ID_WIDTH)
+  ) ram (
+      .clk(clk),
+      .rst(!rst_n),
+
+      // ---------------- WRITE ADDRESS ----------------
+      .s_axi_awid   (aw_id),
+      .s_axi_awaddr (aw_addr),
+      .s_axi_awlen  (aw_len),
+      .s_axi_awsize (aw_size),
+      .s_axi_awburst(aw_burst),
+      .s_axi_awlock (1'b0),
+      .s_axi_awcache(4'b0),
+      .s_axi_awprot (3'b0),
+      .s_axi_awvalid(aw_valid),
+      .s_axi_awready(aw_ready),
+
+      // ---------------- WRITE DATA ----------------
+      .s_axi_wdata (w_data),
+      .s_axi_wstrb (w_strb),
+      .s_axi_wlast (w_last),
+      .s_axi_wvalid(w_valid),
+      .s_axi_wready(w_ready),
+
+      // ---------------- WRITE RESPONSE ----------------
+      .s_axi_bid   (b_id),
+      .s_axi_bresp (b_resp),
+      .s_axi_bvalid(b_valid),
+      .s_axi_bready(b_ready),
+
+      // ---------------- READ ADDRESS ----------------
+      .s_axi_arid   (ar_id),
+      .s_axi_araddr (ar_addr),
+      .s_axi_arlen  (ar_len),
+      .s_axi_arsize (ar_size),
+      .s_axi_arburst(ar_burst),
+      .s_axi_arlock (1'b0),
+      .s_axi_arcache(4'b0),
+      .s_axi_arprot (3'b0),
+      .s_axi_arvalid(ar_valid),
+      .s_axi_arready(ar_ready),
+
+      // ---------------- READ DATA ----------------
+      .s_axi_rid   (r_id),
+      .s_axi_rdata (r_data),
+      .s_axi_rresp (r_resp),
+      .s_axi_rlast (r_last),
+      .s_axi_rvalid(r_valid),
+      .s_axi_rready(r_ready)
+  );
+
   logic [CPU_DW-1:0] read_data;
-
-  // AXI handshake
-  assign aw_ready = 1;
-  assign w_ready  = 1;
-  assign ar_ready = 1;
-  assign b_valid  = aw_valid && w_valid;
-  assign b_resp   = 2'b00;
-  assign r_valid  = ar_valid;
-  assign r_last   = 1;
-  assign r_resp   = 2'b00;
-
-  always_ff @(posedge clk) begin
-    if (w_valid && w_ready) begin
-      mem[(aw_addr>>$clog2(AXI_DATA_WIDTH/8)) % MEM_SIZE] <= w_data; // wrap address
-    end
-    if (r_valid && ar_valid) begin
-      r_data <= mem[(ar_addr>>$clog2(AXI_DATA_WIDTH/8)) % MEM_SIZE]; // wrap address
-    end
-  end
 
   // ================= CPU stimulus =================
   task cpu_write(input [AW-1:0] a, input [CPU_DW-1:0] d, input [(CPU_DW/8)-1:0] s);
@@ -161,30 +193,35 @@ module tb_cpu_axi4_adapter;
   // ================= Test sequence =================
   initial begin
 
-    clk <= 0;
+    clk   = 0;
     rst_n = 0;
 
     #20;
     rst_n = 1;
 
-    #10
+    #10;
 
-    // Write to addresses inside 32-row memory (32 bytes per row)
-    cpu_write(32'h0000, 64'hDEADBEEFCAFEBABE, 8'hFF);
-    cpu_write(32'h0020, 64'h0123456789ABCDEF, 8'hFF);  // next row (32 bytes ahead)
+    // ---------------- WRITE ----------------
 
-    // Read back
-    cpu_read(32'h0000, read_data);
+    cpu_write(16'h0000, 32'hCAFEBABE, 4'hF);
+    cpu_write(16'h0004, 32'hDEADBEEF, 4'hF);
+
+    // ---------------- READ ----------------
+
+    cpu_read(16'h0000, read_data);
     $display("Read 0x0000: %h", read_data);
 
-    cpu_read(32'h0020, read_data);
-    $display("Read 0x0020: %h", read_data);
+    if (read_data !== 32'hCAFEBABE) $error("Mismatch at 0x0000");
 
-    // Check values
-    if (read_data !== 64'h0123456789ABCDEF) $error("Data mismatch!");
+    cpu_read(16'h0004, read_data);
+    $display("Read 0x0004: %h", read_data);
+
+    if (read_data !== 32'hDEADBEEF) $error("Mismatch at 0x0004");
 
     $display("Test completed successfully!");
+
     #50 $finish;
+
   end
 
 endmodule
