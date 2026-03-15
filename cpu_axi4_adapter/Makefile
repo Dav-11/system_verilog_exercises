@@ -18,6 +18,13 @@ XRUN        ?= xrun
 XRUN_FLAGS  ?= -sv -access +rwc -timescale 1ns/1ps
 XRUN_GUI    ?= -gui
 
+VIVADO_XSIM ?= xsim
+VIVADO_FLAGS ?= -tclbatch
+
+VERILATOR ?= verilator
+VERILATOR_FLAGS ?= --cc --exe --build
+VERILATOR_TOP = tb_cpu_axi4_adapter
+
 TOOL ?= questa
 
 #################################
@@ -61,11 +68,14 @@ ifeq ($(TOOL),questa)
 	$(MAKE) vsim
 else ifeq ($(TOOL),xcelium)
 	$(MAKE) xrun
+else ifeq ($(TOOL),vivado)
+	$(MAKE) vivado_run
+else ifeq ($(TOOL),verilator)
+	$(MAKE) verilator_run
 else
 	@echo "Unknown TOOL=$(TOOL)"
 	@exit 1
 endif
-
 
 .PHONY: sim_gui
 sim_gui:
@@ -73,11 +83,14 @@ ifeq ($(TOOL),questa)
 	$(MAKE) vsim_gui
 else ifeq ($(TOOL),xcelium)
 	$(MAKE) xrun_gui
+else ifeq ($(TOOL),vivado)
+	$(MAKE) vivado_gui
+else ifeq ($(TOOL),verilator)
+	@echo "Verilator GUI not supported, use sim_vcd"
 else
 	@echo "Unknown TOOL=$(TOOL)"
 	@exit 1
 endif
-
 
 .PHONY: sim_vcd
 sim_vcd:
@@ -85,23 +98,23 @@ ifeq ($(TOOL),questa)
 	$(MAKE) vsim_vcd
 else ifeq ($(TOOL),xcelium)
 	$(MAKE) xrun_vcd
+else ifeq ($(TOOL),vivado)
+	$(MAKE) vivado_vcd
+else ifeq ($(TOOL),verilator)
+	$(MAKE) verilator_vcd
 else
 	@echo "Unknown TOOL=$(TOOL)"
 	@exit 1
 endif
 
 #################################
-# Questa Init
+# Questa
 #################################
 
 .PHONY: questa_init
 questa_init:
 	@$(VLIB) $(WORK) || true
 	@$(VMAP) work $(WORK) || true
-
-#################################
-# Compile
-#################################
 
 # Compile UVM package first
 .PHONY: uvm_build
@@ -113,36 +126,75 @@ uvm_build: questa_init
 questa_build: questa_init #uvm_build
 	$(VLOG) $(VLOG_FLAGS) +incdir+$(QUESTA_UVM) $(SRC)
 
-#################################
-# Run
-#################################
 
 .PHONY: questa_run
 questa_run: questa_build
 	$(QUESTA) $(VSIM_FLAGS) $(TB)
 
-#################################
-# Convenience
-#################################
-
 .PHONY: vsim
 vsim: questa_run
-
-#################################
-# GUI
-#################################
 
 .PHONY: vsim_gui
 vsim_gui: questa_build
 	$(QUESTA) -t 1ns -do "log -r /*; run -all" $(TB)
 
-#################################
-# VCD
-#################################
-
 .PHONY: vsim_vcd
 vsim_vcd: questa_build
 	$(QUESTA) -c -t 1ns -do "vcd file waves_questa.vcd; vcd add -r /*; run -all; quit -f" $(TB)
+
+#################################
+# Xcelium
+#################################
+
+.PHONY: xcelium_build
+xcelium_build:
+	$(XRUN) $(XRUN_FLAGS) -elaborate $(SRC) -top $(TB)
+
+.PHONY: xrun
+xrun:
+	$(XRUN) $(XRUN_FLAGS) $(SRC) -top $(TB)
+
+.PHONY: xrun_gui
+xrun_gui:
+	$(XRUN) $(XRUN_FLAGS) $(XRUN_GUI) $(SRC) -top $(TB)
+
+.PHONY: xrun_vcd
+xrun_vcd:
+	$(XRUN) $(XRUN_FLAGS) \
+	-input "@database -open waves -vcd; probe -create -all -depth all; run; exit" \
+	$(SRC) -top $(TB)
+
+#################################
+# Vivado XSIM
+#################################
+
+.PHONY: vivado_run
+vivado_run:
+	$(VIVADO_XSIM) $(TB) $(VIVADO_FLAGS)
+
+.PHONY: vivado_gui
+vivado_gui:
+	$(VIVADO_XSIM) $(TB) -gui
+
+.PHONY: vivado_vcd
+vivado_vcd:
+	$(VIVADO_XSIM) $(TB) -tclbatch generate_vcd.tcl
+
+#################################
+# Verilator
+#################################
+
+.PHONY: verilator_build
+verilator_build:
+	$(VERILATOR) $(VERILATOR_FLAGS) $(SRC) tb/$(VERILATOR_TOP).cpp -Mdir obj_dir -top-module $(VERILATOR_TOP)
+
+.PHONY: verilator_run
+verilator_run: verilator_build
+	./obj_dir/V$(VERILATOR_TOP)
+
+.PHONY: verilator_vcd
+verilator_vcd: verilator_build
+	./obj_dir/V$(VERILATOR_TOP) +trace
 
 #################################
 # Clean
@@ -151,40 +203,6 @@ vsim_vcd: questa_build
 .PHONY: clean
 clean:
 	rm -rf work transcript *.wlf *.vcd *.ucdb vsim_stacktrace.vstf
-
-#################################
-# Xcelium Build
-#################################
-
-.PHONY: xcelium_build
-xcelium_build:
-	$(XRUN) $(XRUN_FLAGS) -elaborate $(SRC) -top $(TB)
-
-#################################
-# Xcelium Run
-#################################
-
-.PHONY: xrun
-xrun:
-	$(XRUN) $(XRUN_FLAGS) $(SRC) -top $(TB)
-
-#################################
-# Xcelium GUI
-#################################
-
-.PHONY: xrun_gui
-xrun_gui:
-	$(XRUN) $(XRUN_FLAGS) $(XRUN_GUI) $(SRC) -top $(TB)
-
-#################################
-# Xcelium VCD
-#################################
-
-.PHONY: xrun_vcd
-xrun_vcd:
-	$(XRUN) $(XRUN_FLAGS) \
-	-input "@database -open waves -vcd; probe -create -all -depth all; run; exit" \
-	$(SRC) -top $(TB)
 
 #################################
 # Format
