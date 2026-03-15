@@ -9,7 +9,7 @@ class cpu_txn extends uvm_sequence_item;
 
   `uvm_object_utils(cpu_txn)
 
-  function new(string name="cpu_txn");
+  function new(string name = "cpu_txn");
     super.new(name);
   endfunction
 

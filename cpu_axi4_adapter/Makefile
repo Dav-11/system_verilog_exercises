@@ -34,7 +34,8 @@ UVM_ENV = $(shell find tb/uvm_env -name '*.sv')
 TB_TOP = \
 	tb/tb_cpu_axi4_adapter.sv
 
-SRC = $(TB_IF) $(DUT) $(UVM_ENV) $(TB_TOP)
+# SRC = $(TB_IF) $(DUT) $(UVM_ENV) $(TB_TOP)
+SRC = $(TB_IF) $(DUT) $(TB_TOP)
 
 #################################
 # TARGETS
@@ -63,7 +64,7 @@ uvm_build: questa_init
 
 # Then compile DUT + TB + UVM files
 .PHONY: questa_build
-questa_build: uvm_build
+questa_build: questa_init #uvm_build
 	$(VLOG) $(VLOG_FLAGS) +incdir+$(QUESTA_UVM) $(SRC)
 
 #################################

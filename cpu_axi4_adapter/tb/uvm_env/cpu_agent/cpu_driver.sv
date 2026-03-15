@@ -5,7 +5,7 @@ class cpu_driver extends uvm_driver #(cpu_txn);
   `uvm_component_utils(cpu_driver)
 
   function new(string name, uvm_component parent);
-    super.new(name,parent);
+    super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
@@ -26,7 +26,7 @@ class cpu_driver extends uvm_driver #(cpu_txn);
 
       vif.req <= 0;
 
-      wait(vif.ack);
+      wait (vif.ack);
 
       tx.rdata = vif.rdata;
 
