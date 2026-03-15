@@ -40,6 +40,7 @@ module axi3_hbm_channel_mock #(
     input  logic [AXI_ID_WIDTH-1:0] ar_id,
     input  logic [          AW-1:0] ar_addr,
     input  logic [             7:0] ar_len,
+    input  logic [             2:0] ar_size,
     input  logic [             1:0] ar_burst,  // 01 = INCR, 10 = WRAP, 00 = FIXED
     input  logic                    ar_valid,
     output logic                    ar_ready,

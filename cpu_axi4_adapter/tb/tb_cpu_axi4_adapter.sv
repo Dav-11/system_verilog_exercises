@@ -45,7 +45,7 @@ module tb_cpu_axi4_adapter;
   logic [      AXI_ID_WIDTH-1:0] ar_id;
   logic [                AW-1:0] ar_addr;
   logic [                   7:0] ar_len;
-  //   logic [                   2:0] ar_size;
+  logic [                   2:0] ar_size;
   logic [                   1:0] ar_burst;
   logic                          ar_valid;
   logic                          ar_ready;
@@ -61,7 +61,7 @@ module tb_cpu_axi4_adapter;
 
   cpu_axi4_adapter #(
       .AW(AW),
-      .DW(DW),
+      .CPU_DW(DW),
       .AXI_ID_WIDTH(AXI_ID_WIDTH),
       .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) dut (
@@ -103,7 +103,7 @@ module tb_cpu_axi4_adapter;
       .ar_id(ar_id),
       .ar_addr(ar_addr),
       .ar_len(ar_len),
-      // .ar_size(ar_size), 
+      .ar_size(ar_size),
       .ar_burst(ar_burst),
       .ar_valid(ar_valid),
       .ar_ready(ar_ready),
@@ -151,7 +151,7 @@ module tb_cpu_axi4_adapter;
       .ar_id(ar_id),
       .ar_addr(ar_addr),
       .ar_len(ar_len),
-      // .ar_size(ar_size), 
+      .ar_size(ar_size),
       .ar_burst(ar_burst),
       .ar_valid(ar_valid),
       .ar_ready(ar_ready),
