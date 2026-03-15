@@ -1,75 +1,114 @@
-
 #################################
 # VARS
 #################################
 
+TB       ?= tb_cpu_axi4_adapter
 
-# Questa SIM (Override these if needed: e.g., make vsim TB=arbiter_tb)
-TB       ?= arbiter_tb
-QUESTA   ?= vsim            # set to full path if not on PATH
+QUESTA   ?= vsim
+QUESTA_UVM ?= /eda/Siemens/2024-25/RHELx86/QUESTA-CORE-PRIME_2024.3/questasim/verilog_src/uvm-1.2/src
 VLOG     ?= vlog
 VMAP     ?= vmap
 VLIB     ?= vlib
 WORK     ?= work
 
-# Common compile flags
-# -sv enables SystemVerilog; +acc for signal access (waves); -timescale from source or override here
 VLOG_FLAGS ?= -sv +acc
-
-# Batch simulation (-c), run to completion, then quit
 VSIM_FLAGS ?= -c -t 1ns -do "run -all; quit -f"
+
+#################################
+# SOURCE FILES
+#################################
+
+# Interfaces
+TB_IF = \
+	tb/cpu_if.sv \
+	tb/axi4_if.sv
+
+# DUT
+DUT = \
+	hdl/cpu_axi4_adapter.sv
+
+# UVM ENV
+UVM_ENV = $(shell find tb/uvm_env -name '*.sv')
+
+# TB top
+TB_TOP = \
+	tb/tb_cpu_axi4_adapter.sv
+
+SRC = $(TB_IF) $(DUT) $(UVM_ENV) $(TB_TOP)
 
 #################################
 # TARGETS
 #################################
 
-all: fmt
+.PHONY: all
+all: vsim
 
-# [Questa] 1 Prepare the work library
+#################################
+# Questa Init
+#################################
+
 .PHONY: questa_init
 questa_init:
 	@$(VLIB) $(WORK) || true
 	@$(VMAP) work $(WORK) || true
 
-# [Questa] 2) Compile (analyze + elaborate)
-.PHONY: questa_build
-questa_build: questa_init
-	@$(VLOG) $(VLOG_FLAGS) arbiter.sv arbiter_tb.sv
+#################################
+# Compile
+#################################
 
-# [Questa] 3) Run batch simulation (non-GUI)
+# Compile UVM package first
+.PHONY: uvm_build
+uvm_build: questa_init
+	$(VLOG) -sv +incdir+$(QUESTA_UVM) $(QUESTA_UVM)/uvm_pkg.sv
+
+# Then compile DUT + TB + UVM files
+.PHONY: questa_build
+questa_build: uvm_build
+	$(VLOG) $(VLOG_FLAGS) +incdir+$(QUESTA_UVM) $(SRC)
+
+#################################
+# Run
+#################################
+
 .PHONY: questa_run
 questa_run: questa_build
-	@$(QUESTA) $(VSIM_FLAGS) $(TB)
+	$(QUESTA) $(VSIM_FLAGS) $(TB)
 
-# [Questa] Convenience target: compile + run
+#################################
+# Convenience
+#################################
+
 .PHONY: vsim
 vsim: questa_run
 
-# [Questa] 4) GUI run with waves (logs all signals recursively)
+#################################
+# GUI
+#################################
+
 .PHONY: vsim_gui
 vsim_gui: questa_build
-	@$(QUESTA) -t 1ns -do "log -r /*; run -all" $(TB)
+	$(QUESTA) -t 1ns -do "log -r /*; run -all" $(TB)
 
-# [Questa] 5) Produce a VCD (if you prefer VCD instead of .wlf)
-#    Questa can write VCD via vsim commands; no code changes needed.
+#################################
+# VCD
+#################################
+
 .PHONY: vsim_vcd
 vsim_vcd: questa_build
-	@$(QUESTA) -c -t 1ns -do "vcd file arbiter.vcd; vcd add -r /*; run -all; vcd flush; quit -f" $(TB)
+	$(QUESTA) -c -t 1ns -do "vcd file waves.vcd; vcd add -r /*; run -all; quit -f" $(TB)
 
-# [Questa] 6) Coverage (UCDB); opens GUI report at the end
-COV_LIB   ?= cov_work
-.PHONY: vsim_cov
-vsim_cov: questa_init
-	@$(VLOG) $(VLOG_FLAGS) +cover=bcesft -coveropt 3 arbiter.sv arbiter_tb.sv
-	@$(QUESTA) -c -coverage -t 1ns -do "run -all; coverage report -details -cvg -codeAll -output coverage.txt; quit -f" $(TB)
-	@echo "Coverage report written to coverage.txt"
+#################################
+# Clean
+#################################
 
-# [Questa] 7) Clean Questa artifacts
-.PHONY: clean_questa
-clean_questa:
-	@rm -rf $(WORK) $(COV_LIB) transcript *.wlf *.ucdb vsim_stacktrace.vstf covhtmlreport coverage.txt arbiter.vcd
+.PHONY: clean
+clean:
+	rm -rf work transcript *.wlf *.vcd *.ucdb vsim_stacktrace.vstf
 
+#################################
+# Format
+#################################
 
 .PHONY: fmt
-fmt: 
-	verible-verilog-format --inplace=true **/*.sv
+fmt:
+	verible-verilog-format --inplace=true $$(find . -name "*.sv")
