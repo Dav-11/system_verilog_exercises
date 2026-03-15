@@ -107,7 +107,7 @@ module tb_cpu_axi4_adapter;
   );
 
   // ================= Simple AXI memory model =================
-  localparam MEM_SIZE = 1024;
+  localparam MEM_SIZE = 32;  // reduce memory to 32 rows
   logic [AXI_DATA_WIDTH-1:0] mem[0:MEM_SIZE-1];
   logic [CPU_DW-1:0] read_data;
 
@@ -123,10 +123,10 @@ module tb_cpu_axi4_adapter;
 
   always_ff @(posedge clk) begin
     if (w_valid && w_ready) begin
-      mem[aw_addr>>$clog2(AXI_DATA_WIDTH/8)] <= w_data;
+      mem[(aw_addr>>$clog2(AXI_DATA_WIDTH/8)) % MEM_SIZE] <= w_data; // wrap address
     end
     if (r_valid && ar_valid) begin
-      r_data <= mem[ar_addr>>$clog2(AXI_DATA_WIDTH/8)];
+      r_data <= mem[(ar_addr>>$clog2(AXI_DATA_WIDTH/8)) % MEM_SIZE]; // wrap address
     end
   end
 
@@ -169,17 +169,16 @@ module tb_cpu_axi4_adapter;
 
     #10
 
-    // Write to 0x1000
-    cpu_write(32'h1000, 64'hDEADBEEFCAFEBABE, 8'hFF);
-    // Write to 0x1008
-    cpu_write(32'h1008, 64'h0123456789ABCDEF, 8'hFF);
+    // Write to addresses inside 32-row memory (32 bytes per row)
+    cpu_write(32'h0000, 64'hDEADBEEFCAFEBABE, 8'hFF);
+    cpu_write(32'h0020, 64'h0123456789ABCDEF, 8'hFF);  // next row (32 bytes ahead)
 
     // Read back
-    cpu_read(32'h1000, read_data);
-    $display("Read 0x1000: %h", read_data);
+    cpu_read(32'h0000, read_data);
+    $display("Read 0x0000: %h", read_data);
 
-    cpu_read(32'h1008, read_data);
-    $display("Read 0x1008: %h", read_data);
+    cpu_read(32'h0020, read_data);
+    $display("Read 0x0020: %h", read_data);
 
     // Check values
     if (read_data !== 64'h0123456789ABCDEF) $error("Data mismatch!");
