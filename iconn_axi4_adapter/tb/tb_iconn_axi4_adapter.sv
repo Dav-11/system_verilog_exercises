@@ -1,78 +1,83 @@
-`timescale 1ns / 1ps
+module tb_iconn_axi4_adapter;
 
-module tb_cpu_axi4_adapter;
-
-  // Parameters (match your DUT)
+  // Parameters
   localparam AW = 16;
-  localparam CPU_DW = 32;
+  localparam ICONN_DW = 32;
   localparam AXI_ID_WIDTH = 8;
   localparam AXI_DATA_WIDTH = 32;
 
-  // Clock & reset
-  logic clk;
-  logic rst_n;
+  logic                          clk;
+  logic                          rst_n;
 
-  // ================= CPU signals =================
-  logic req;
-  logic we;
-  logic [AW-1:0] addr;
-  logic [CPU_DW-1:0] wdata;
-  logic [(CPU_DW/8)-1:0] sel;
+  // ================= ICONN signals =================
 
-  logic [CPU_DW-1:0] rdata;
-  logic ack;
+  logic [                AW-1:0] r_addr;
+  logic [          ICONN_DW-1:0] r_data;
+  logic                          r_cyc;
+  logic                          r_ack;
+
+  logic [                AW-1:0] w_addr;
+  logic [          ICONN_DW-1:0] w_data;
+  logic                          w_cyc;
+  logic                          w_ack;
 
   // ================= AXI signals =================
-  logic [AXI_ID_WIDTH-1:0] aw_id;
-  logic [AW-1:0] aw_addr;
-  logic [7:0] aw_len;
-  logic [2:0] aw_size;
-  logic [1:0] aw_burst;
-  logic aw_valid;
-  logic aw_ready;
+  logic [      AXI_ID_WIDTH-1:0] aw_id;
+  logic [                AW-1:0] aw_addr;
+  logic [                   7:0] aw_len;
+  logic [                   2:0] aw_size;
+  logic [                   1:0] aw_burst;
+  logic                          aw_valid;
+  logic                          aw_ready;
 
-  logic [AXI_DATA_WIDTH-1:0] w_data;
+  logic [    AXI_DATA_WIDTH-1:0] w_data;
   logic [(AXI_DATA_WIDTH/8)-1:0] w_strb;
-  logic w_last;
-  logic w_valid;
-  logic w_ready;
+  logic                          w_last;
+  logic                          w_valid;
+  logic                          w_ready;
 
-  logic [AXI_ID_WIDTH-1:0] b_id;
-  logic [1:0] b_resp;
-  logic b_valid;
-  logic b_ready;
+  logic [      AXI_ID_WIDTH-1:0] b_id;
+  logic [                   1:0] b_resp;
+  logic                          b_valid;
+  logic                          b_ready;
 
-  logic [AXI_ID_WIDTH-1:0] ar_id;
-  logic [AW-1:0] ar_addr;
-  logic [7:0] ar_len;
-  logic [2:0] ar_size;
-  logic [1:0] ar_burst;
-  logic ar_valid;
-  logic ar_ready;
+  logic [      AXI_ID_WIDTH-1:0] ar_id;
+  logic [                AW-1:0] ar_addr;
+  logic [                   7:0] ar_len;
+  logic [                   2:0] ar_size;
+  logic [                   1:0] ar_burst;
+  logic                          ar_valid;
+  logic                          ar_ready;
 
-  logic [AXI_ID_WIDTH-1:0] r_id;
-  logic [AXI_DATA_WIDTH-1:0] r_data;
-  logic [1:0] r_resp;
-  logic r_last;
-  logic r_valid;
-  logic r_ready;
+  logic [      AXI_ID_WIDTH-1:0] r_id;
+  logic [    AXI_DATA_WIDTH-1:0] r_data;
+  logic [                   1:0] r_resp;
+  logic                          r_last;
+  logic                          r_valid;
+  logic                          r_ready;
 
-  // ================= DUT =================
-  cpu_axi4_adapter #(
+  // internal signal
+  logic [          ICONN_DW-1:0] read_data;
+
+  iconn_axi4_adapter #(
       .AW(AW),
-      .CPU_DW(CPU_DW),
+      .ICONN_DW(ICONN_DW),
       .AXI_ID_WIDTH(AXI_ID_WIDTH),
       .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) dut (
-      .clk(clk),
+      .clk  (clk),
       .rst_n(rst_n),
-      .req(req),
-      .we(we),
-      .addr(addr),
-      .wdata(wdata),
-      .sel(sel),
-      .rdata(rdata),
-      .ack(ack),
+
+      .r_addr(r_addr),
+      .r_data(r_data),
+      .r_cyc (r_cyc),
+      .r_ack (r_ack),
+
+      .w_addr(w_addr),
+      .w_data(w_data),
+      .w_cyc (w_cyc),
+      .w_ack (w_ack),
+
       .aw_id(aw_id),
       .aw_addr(aw_addr),
       .aw_len(aw_len),
@@ -158,35 +163,40 @@ module tb_cpu_axi4_adapter;
       .s_axi_rready(r_ready)
   );
 
-  logic [CPU_DW-1:0] read_data;
+  /**********************************
+   * TASKS
+   **********************************/
 
-  // ================= CPU stimulus =================
-  task cpu_write(input [AW-1:0] a, input [CPU_DW-1:0] d, input [(CPU_DW/8)-1:0] s);
+  task cpu_write([AW-1:0] a, [ICONN_DW-1:0] d, [(ICONN_DW/8)-1:0] s);
     begin
       @(posedge clk);
-      addr <= a;
-      wdata <= d;
-      sel <= s;
-      we <= 1;
-      req <= 1;
+      w_addr <= a;
+      w_data <= d;
+      //   sel <= s;
+      //   we <= 1;
+      w_cyc  <= 1;
       @(posedge clk);
-      req <= 0;
-      wait (ack);
+      w_cyc <= 0;
+      wait (w_ack);
     end
   endtask
 
-  task cpu_read(input [AW-1:0] a, output [CPU_DW-1:0] d);
+  task cpu_read([AW-1:0] a, [ICONN_DW-1:0] d);
     begin
       @(posedge clk);
-      addr <= a;
-      we   <= 0;
-      req  <= 1;
+      r_addr <= a;
+      r_cyc  <= 1;
+      //   we   <= 0;
       @(posedge clk);
-      req <= 0;
-      wait (ack);
-      d = rdata;
+      r_cyc <= 0;
+      wait (r_ack);
+      d = r_data;
     end
   endtask
+
+  /**********************************
+   * TEST LOGIC
+   **********************************/
 
   always #5 clk = ~clk;
 
@@ -224,4 +234,5 @@ module tb_cpu_axi4_adapter;
 
   end
 
-endmodule
+
+endmodule : tb_iconn_axi4_adapter
