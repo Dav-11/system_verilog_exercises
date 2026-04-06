@@ -70,43 +70,69 @@ module iconn_axi4_adapter #(
   end
 
   // ====================================================
-  // Derived constants
+  // Modules
   // ====================================================
 
-  localparam int ICONN_BYTES = ICONN_DW / 8;
-  localparam int AXI_BYTES = AXI_DATA_WIDTH / 8;
+  iconn_axi4_adapter_r #(
+      .AW(AW),
+      .ICONN_DW(ICONN_DW),
+      .AXI_ID_WIDTH(AXI_ID_WIDTH),
+      .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) fsm_r (
+      .clk  (clk),
+      .rst_n(rst_n),
 
-  localparam int ICONN_BYTE_LSB = $clog2(ICONN_BYTES);
-  localparam int AXI_BYTE_LSB = $clog2(AXI_BYTES);
+      .addr(r_addr),
+      .data(r_data),
+      .enable(r_cyc),
+      .ack(r_ack),
 
-  localparam int LANE_BITS = AXI_BYTE_LSB - ICONN_BYTE_LSB;
+      .ar_addr(ar_addr),
+      .ar_len(ar_len),
+      .ar_size(ar_size),
+      .ar_burst(ar_burst),
+      .ar_valid(ar_valid),
+      .ar_ready(ar_ready),
+      .r_id(r_id),
+      .r_data(r_data),
+      .r_resp(r_resp),
+      .r_last(r_last),
+      .r_valid(r_valid),
+      .r_ready(r_ready)
+  );
 
-  // AXI size = log2(bytes per beat)
-  localparam logic [2:0] AXI_SIZE = $clog2(AXI_BYTES);
+  iconn_axi4_adapter_w #(
+      .AW(AW),
+      .ICONN_DW(ICONN_DW),
+      .AXI_ID_WIDTH(AXI_ID_WIDTH),
+      .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) fsm_r (
+      .clk  (clk),
+      .rst_n(rst_n),
 
-  // Single beat
-  localparam logic [7:0] AXI_BEAT_NUMBER = 8'd0;
+      .addr(w_addr),
+      .data(w_data),
+      .enable(w_cyc),
+      .ack(w_ack),
 
-  // ====================================================
-  // States
-  // ====================================================
+      .aw_id(aw_id),
+      .aw_addr(aw_addr),
+      .aw_len(aw_len),
+      .aw_size(aw_size),
+      .aw_burst(aw_burst),
+      .aw_valid(aw_valid),
+      .aw_ready(aw_ready),
 
-  typedef enum logic [2:0] {
-    IDLE,
-    WRITE_ADDR,
-    WRITE_DATA,
-    WRITE_RESP,
-    READ_ADDR,
-    READ_DATA,
-    ERROR
-  } state_t;
+      .w_data (w_data),
+      .w_strb (w_strb),
+      .w_last (w_last),
+      .w_valid(w_valid),
+      .w_ready(w_ready),
 
-  // ====================================================
-  // Registers
-  // ====================================================
-
-  state_t state_r, state_n;
-
-  logic [LANE_BITS-1:0] lane;
+      .b_id(b_id),
+      .b_resp(b_resp),
+      .b_valid(b_valid),
+      .b_ready(b_ready)
+  );
 
 endmodule : iconn_axi4_adapter
