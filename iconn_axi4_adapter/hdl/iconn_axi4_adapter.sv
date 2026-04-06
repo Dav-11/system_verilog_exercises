@@ -107,7 +107,7 @@ module iconn_axi4_adapter #(
       .ICONN_DW(ICONN_DW),
       .AXI_ID_WIDTH(AXI_ID_WIDTH),
       .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
-  ) fsm_r (
+  ) fsm_w (
       .clk  (clk),
       .rst_n(rst_n),
 
