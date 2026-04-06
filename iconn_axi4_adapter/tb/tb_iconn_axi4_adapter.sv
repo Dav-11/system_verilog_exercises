@@ -1,13 +1,12 @@
-timeunit 1ns;
-timeprecision 1ps;
+timeunit 1ns; timeprecision 1ps;
 
 module tb_iconn_axi4_adapter;
 
   // Parameters
-  localparam AW = 16;
-  localparam ICONN_DW = 32;
-  localparam AXI_ID_WIDTH = 8;
-  localparam AXI_DATA_WIDTH = 32;
+  localparam int AW = 16;
+  localparam int ICONN_DW = 32;
+  localparam int AXI_ID_WIDTH = 8;
+  localparam int AXI_DATA_WIDTH = 32;
 
   logic                          clk;
   logic                          rst_n;
@@ -170,30 +169,32 @@ module tb_iconn_axi4_adapter;
    * TASKS
    **********************************/
 
-  task iconn_write([AW-1:0] a, [ICONN_DW-1:0] d, [(ICONN_DW/8)-1:0] s);
+  task iconn_write(input [AW-1:0] a, input [ICONN_DW-1:0] d, input [(ICONN_DW/8)-1:0] s);
     begin
       @(posedge clk);
       waddr <= a;
       wdata <= d;
-      //   sel <= s;
-      //   we <= 1;
       wcyc  <= 1;
-      @(posedge clk);
+
+      // Hold request until acknowledged
+      do @(posedge clk); while (!wack);
+
       wcyc <= 0;
-      wait (wack);
     end
   endtask
 
-  task iconn_read([AW-1:0] a, [ICONN_DW-1:0] d);
+  task iconn_read(input [AW-1:0] a, output [ICONN_DW-1:0] d);
     begin
       @(posedge clk);
       raddr <= a;
       rcyc  <= 1;
-      //   we   <= 0;
-      @(posedge clk);
+
+      // Wait for ack
+      do @(posedge clk); while (!rack);
+
+      d = rdata;  // ✅ now works
+
       rcyc <= 0;
-      wait (rack);
-      d = rdata;
     end
   endtask
 
@@ -203,11 +204,25 @@ module tb_iconn_axi4_adapter;
 
   always #5 clk = ~clk;
 
+  initial begin
+    $dumpfile("wave.vcd");
+    $dumpvars(0, tb_iconn_axi4_adapter);
+  end
+
   // ================= Test sequence =================
   initial begin
-
     clk   = 0;
     rst_n = 0;
+
+    // Initialize ICONN side
+    raddr = 0;
+    rcyc  = 0;
+    waddr = 0;
+    wdata = 0;
+    wcyc  = 0;
+
+    // AXI outputs driven by DUT → no need to init
+    // AXI inputs from RAM → handled by RAM
 
     #20;
     rst_n = 1;
@@ -236,6 +251,5 @@ module tb_iconn_axi4_adapter;
     #50 $finish;
 
   end
-
 
 endmodule : tb_iconn_axi4_adapter
