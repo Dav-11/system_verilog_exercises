@@ -33,9 +33,7 @@ TOOL ?= questa
 # Interfaces
 TB_IF = $(shell find tb/ -name '*_if.sv')
 
-# DUT
-DUT = \
-	hdl/iconn_axi4_adapter.sv
+DUT = $(shell find hdl/ -name '*.sv')
 
 # UVM ENV
 UVM_ENV = $(shell find tb/uvm_env -name '*.sv')
