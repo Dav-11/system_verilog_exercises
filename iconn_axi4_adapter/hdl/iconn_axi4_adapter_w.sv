@@ -12,7 +12,7 @@ module iconn_axi4_adapter_w #(
 
     input  logic [      AW-1:0] addr,
     input  logic                enable,
-    output logic [ICONN_DW-1:0] data,
+    input  logic [ICONN_DW-1:0] data,
     output logic                ack,
 
     // ================= AXI MASTER SIDE =================
