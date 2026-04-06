@@ -93,6 +93,7 @@ module iconn_axi4_adapter #(
       .ar_burst(ar_burst),
       .ar_valid(ar_valid),
       .ar_ready(ar_ready),
+
       .r_id(r_id),
       .r_data(r_data),
       .r_resp(r_resp),
