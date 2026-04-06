@@ -11,6 +11,12 @@
 venv
 iverilog
 
+# Vivado
+**/transcript
+**/vivado.log
+**/vivado.jou
+**/vsim.wlf
+
 # DVT
 **/.dvt
 **/dvt_build.log
@@ -18,4 +24,3 @@ iverilog
 # Questa
 **/work
 **/modelsim.ini
-
