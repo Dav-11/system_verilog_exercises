@@ -212,7 +212,7 @@ module iconn_axi4_adapter_r #(
             state_n = IDLE;
 
             // output read word
-            data_n  = r_data[lane*CPU_DW+CPU_DW-1-:CPU_DW];
+            data_n  = r_data[lane*ICONN_DW+ICONN_DW-1-:ICONN_DW];
             ack_n   = 1'b1;
 
           end else begin
