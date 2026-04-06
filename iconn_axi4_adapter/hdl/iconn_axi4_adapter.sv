@@ -9,15 +9,15 @@ module iconn_axi4_adapter #(
 
     // ================= ICONN SIDE =================
 
-    input  logic [      AW-1:0] r_addr,
-    output logic [ICONN_DW-1:0] r_data,
-    input  logic                r_cyc,
-    output logic                r_ack,
+    input  logic [      AW-1:0] raddr,
+    output logic [ICONN_DW-1:0] rdata,
+    input  logic                rcyc,
+    output logic                rack,
 
-    input  logic [      AW-1:0] w_addr,
-    input  logic [ICONN_DW-1:0] w_data,
-    input  logic                w_cyc,
-    output logic                w_ack,
+    input  logic [      AW-1:0] waddr,
+    input  logic [ICONN_DW-1:0] wdata,
+    input  logic                wcyc,
+    output logic                wack,
 
     // ================= AXI MASTER SIDE =================
 
@@ -82,10 +82,10 @@ module iconn_axi4_adapter #(
       .clk  (clk),
       .rst_n(rst_n),
 
-      .addr(r_addr),
-      .data(r_data),
-      .enable(r_cyc),
-      .ack(r_ack),
+      .addr(raddr),
+      .data(rdata),
+      .enable(rcyc),
+      .ack(rack),
 
       .ar_addr(ar_addr),
       .ar_len(ar_len),
@@ -111,10 +111,10 @@ module iconn_axi4_adapter #(
       .clk  (clk),
       .rst_n(rst_n),
 
-      .addr(w_addr),
-      .data(w_data),
-      .enable(w_cyc),
-      .ack(w_ack),
+      .addr(waddr),
+      .data(wdata),
+      .enable(wcyc),
+      .ack(wack),
 
       .aw_id(aw_id),
       .aw_addr(aw_addr),
