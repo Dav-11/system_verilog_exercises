@@ -201,6 +201,8 @@ module iconn_axi4_adapter_w #(
 
     b_ready_n = '0;
 
+    ack_n = '0;
+
     unique case (state_r)
 
       IDLE: begin
