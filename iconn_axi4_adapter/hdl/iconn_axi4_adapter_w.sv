@@ -76,6 +76,7 @@ module iconn_axi4_adapter_w #(
     ADDRESS_WRITE,
     DATA_WRITE,
     RESPONSE_READ,
+    SEND_ACK,
     ERROR
   } state_t;
 
@@ -268,7 +269,7 @@ module iconn_axi4_adapter_w #(
 
           if (b_resp == 2'b00 || b_resp == 2'b01) begin
 
-            state_n = IDLE;
+            state_n = SEND_ACK;
             ack_n   = 1'b1;
           end else begin
 
@@ -279,6 +280,12 @@ module iconn_axi4_adapter_w #(
           // keep asserting output
           b_ready_n = b_ready_r;
         end
+      end
+
+      SEND_ACK: begin
+
+        // wait one cycle for ack to be asserted before going to IDLE
+        state_n = IDLE;
       end
 
       ERROR: begin
