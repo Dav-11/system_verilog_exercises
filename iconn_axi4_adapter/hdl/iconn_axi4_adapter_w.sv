@@ -162,7 +162,7 @@ module iconn_axi4_adapter_w #(
     // ======================================
 
     if (LANE_BITS > 0) begin
-      lane = addr[AXI_BYTE_LSB-1:CPU_BYTE_LSB];
+      lane = addr[AXI_BYTE_LSB-1:ICONN_BYTE_LSB];
     end else begin
       lane = '0;
     end
