@@ -169,7 +169,7 @@ module tb_iconn_axi4_adapter;
    * TASKS
    **********************************/
 
-  task iconn_write(input [AW-1:0] a, input [ICONN_DW-1:0] d, input [(ICONN_DW/8)-1:0] s);
+  task iconn_write(input [AW-1:0] a, input [ICONN_DW-1:0] d);
     begin
       @(posedge clk);
       waddr <= a;
@@ -231,8 +231,8 @@ module tb_iconn_axi4_adapter;
 
     // ---------------- WRITE ----------------
 
-    iconn_write(16'h0000, 32'hCAFEBABE, 4'hF);
-    iconn_write(16'h0004, 32'hDEADBEEF, 4'hF);
+    iconn_write(16'h0000, 32'hCAFEBABE);
+    iconn_write(16'h0004, 32'hDEADBEEF);
 
     // ---------------- READ ----------------
 
