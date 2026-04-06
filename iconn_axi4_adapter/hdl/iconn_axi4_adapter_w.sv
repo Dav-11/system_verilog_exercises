@@ -71,7 +71,7 @@ module iconn_axi4_adapter_w #(
   // States
   // ====================================================
 
-  typedef enum logic [1:0] {
+  typedef enum logic [2:0] {
     IDLE,
     ADDRESS_WRITE,
     DATA_WRITE,
