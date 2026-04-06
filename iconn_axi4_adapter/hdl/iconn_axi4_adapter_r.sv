@@ -66,10 +66,11 @@ module iconn_axi4_adapter_r #(
   // States
   // ====================================================
 
-  typedef enum logic [1:0] {
+  typedef enum logic [2:0] {
     IDLE,
     ADDRESS_READ,
     DATA_READ,
+    SEND_ACK,
     ERROR
   } state_t;
 
@@ -223,7 +224,7 @@ module iconn_axi4_adapter_r #(
 
           if (r_resp == 2'b00 || r_resp == 2'b01) begin
 
-            state_n = IDLE;
+            state_n = SEND_ACK;
 
             // output read word
             data_n  = r_data[lane*ICONN_DW+ICONN_DW-1-:ICONN_DW];
@@ -238,7 +239,12 @@ module iconn_axi4_adapter_r #(
           // keep asserting output
           r_ready_n = r_ready_r;
         end
+      end
 
+      SEND_ACK: begin
+
+        // wait one cycle for ack to be asserted before going to IDLE
+        state_n = IDLE;
       end
 
       ERROR: begin
