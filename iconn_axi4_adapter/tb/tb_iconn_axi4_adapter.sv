@@ -1,3 +1,6 @@
+timeunit 1ns;
+timeprecision 1ps;
+
 module tb_iconn_axi4_adapter;
 
   // Parameters

@@ -87,6 +87,7 @@ module iconn_axi4_adapter #(
       .enable(rcyc),
       .ack(rack),
 
+      .ar_id(ar_id),
       .ar_addr(ar_addr),
       .ar_len(ar_len),
       .ar_size(ar_size),
@@ -112,8 +113,8 @@ module iconn_axi4_adapter #(
       .rst_n(rst_n),
 
       .addr(waddr),
-      .data(wdata),
       .enable(wcyc),
+      .data(wdata),
       .ack(wack),
 
       .aw_id(aw_id),
