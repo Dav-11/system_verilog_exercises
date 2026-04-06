@@ -189,7 +189,7 @@ module iconn_axi4_adapter_w #(
         if (enable) begin
 
           // next state
-          state_n    = ADDRESS_READ;
+          state_n    = ADDRESS_WRITE;
 
           // start asserting output
           aw_id_n    = ID;
