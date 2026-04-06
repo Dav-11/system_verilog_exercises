@@ -196,7 +196,7 @@ module iconn_axi4_adapter_w #(
 
           // ask for address aligned with AXI_WIDTH that contains required address
           // needs lane signal to extract required word
-          aw_addr_n  = {addr_r[AW-1:AXI_BYTE_LSB], {AXI_BYTE_LSB{1'b0}}};
+          aw_addr_n  = {addr[AW-1:AXI_BYTE_LSB], {AXI_BYTE_LSB{1'b0}}};
           aw_len_n   = AXI_BEAT_NUMBER;
           aw_size_n  = AXI_SIZE;
           aw_valid_n = 1'b1;
