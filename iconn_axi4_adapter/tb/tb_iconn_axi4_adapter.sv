@@ -11,15 +11,15 @@ module tb_iconn_axi4_adapter;
 
   // ================= ICONN signals =================
 
-  logic [                AW-1:0] r_addr;
-  logic [          ICONN_DW-1:0] r_data;
-  logic                          r_cyc;
-  logic                          r_ack;
+  logic [                AW-1:0] raddr;
+  logic [          ICONN_DW-1:0] rdata;
+  logic                          rcyc;
+  logic                          rack;
 
-  logic [                AW-1:0] w_addr;
-  logic [          ICONN_DW-1:0] w_data;
-  logic                          w_cyc;
-  logic                          w_ack;
+  logic [                AW-1:0] waddr;
+  logic [          ICONN_DW-1:0] wdata;
+  logic                          wcyc;
+  logic                          wack;
 
   // ================= AXI signals =================
   logic [      AXI_ID_WIDTH-1:0] aw_id;
@@ -68,15 +68,15 @@ module tb_iconn_axi4_adapter;
       .clk  (clk),
       .rst_n(rst_n),
 
-      .r_addr(r_addr),
-      .r_data(r_data),
-      .r_cyc (r_cyc),
-      .r_ack (r_ack),
+      .raddr(raddr),
+      .rdata(rdata),
+      .rcyc (rcyc),
+      .rack (rack),
 
-      .w_addr(w_addr),
-      .w_data(w_data),
-      .w_cyc (w_cyc),
-      .w_ack (w_ack),
+      .waddr(waddr),
+      .wdata(wdata),
+      .wcyc (wcyc),
+      .wack (wack),
 
       .aw_id(aw_id),
       .aw_addr(aw_addr),
@@ -167,30 +167,30 @@ module tb_iconn_axi4_adapter;
    * TASKS
    **********************************/
 
-  task cpu_write([AW-1:0] a, [ICONN_DW-1:0] d, [(ICONN_DW/8)-1:0] s);
+  task iconn_write([AW-1:0] a, [ICONN_DW-1:0] d, [(ICONN_DW/8)-1:0] s);
     begin
       @(posedge clk);
-      w_addr <= a;
-      w_data <= d;
+      waddr <= a;
+      wdata <= d;
       //   sel <= s;
       //   we <= 1;
-      w_cyc  <= 1;
+      wcyc  <= 1;
       @(posedge clk);
-      w_cyc <= 0;
-      wait (w_ack);
+      wcyc <= 0;
+      wait (wack);
     end
   endtask
 
-  task cpu_read([AW-1:0] a, [ICONN_DW-1:0] d);
+  task iconn_read([AW-1:0] a, [ICONN_DW-1:0] d);
     begin
       @(posedge clk);
-      r_addr <= a;
-      r_cyc  <= 1;
+      raddr <= a;
+      rcyc  <= 1;
       //   we   <= 0;
       @(posedge clk);
-      r_cyc <= 0;
-      wait (r_ack);
-      d = r_data;
+      rcyc <= 0;
+      wait (rack);
+      d = rdata;
     end
   endtask
 
@@ -213,17 +213,17 @@ module tb_iconn_axi4_adapter;
 
     // ---------------- WRITE ----------------
 
-    cpu_write(16'h0000, 32'hCAFEBABE, 4'hF);
-    cpu_write(16'h0004, 32'hDEADBEEF, 4'hF);
+    iconn_write(16'h0000, 32'hCAFEBABE, 4'hF);
+    iconn_write(16'h0004, 32'hDEADBEEF, 4'hF);
 
     // ---------------- READ ----------------
 
-    cpu_read(16'h0000, read_data);
+    iconn_read(16'h0000, read_data);
     $display("Read 0x0000: %h", read_data);
 
     if (read_data !== 32'hCAFEBABE) $error("Mismatch at 0x0000");
 
-    cpu_read(16'h0004, read_data);
+    iconn_read(16'h0004, read_data);
     $display("Read 0x0004: %h", read_data);
 
     if (read_data !== 32'hDEADBEEF) $error("Mismatch at 0x0004");
