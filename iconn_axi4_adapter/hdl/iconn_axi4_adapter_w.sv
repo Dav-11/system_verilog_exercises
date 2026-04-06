@@ -210,8 +210,8 @@ module iconn_axi4_adapter_w #(
           state_n = DATA_WRITE;
 
           // start asserting W DATA
-          w_data_n[lane*CPU_DW+CPU_DW-1-:CPU_DW] = data;
-          w_strb_n[lane*CPU_BYTES+CPU_BYTES-1-:CPU_BYTES] = '1; // no sel signal in input => all word is selected
+          w_data_n[lane*ICONN_DW+ICONN_DW-1-:ICONN_DW] = data;
+          w_strb_n[lane*ICONN_BYTES+ICONN_BYTES-1-:ICONN_BYTES] = '1; // no sel signal in input => all word is selected
           w_last_n = 1'b1;  // always 1 beat
           w_valid_n = 1'b1;
 
