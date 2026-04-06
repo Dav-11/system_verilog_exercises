@@ -268,4 +268,4 @@ module iconn_axi4_adapter_w #(
     endcase
   end
 
-endmodule : iconn_axi4_adapter_r
+endmodule : iconn_axi4_adapter_w
