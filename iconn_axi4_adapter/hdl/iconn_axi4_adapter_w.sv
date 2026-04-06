@@ -155,6 +155,24 @@ module iconn_axi4_adapter_w #(
   // Combinational logic
   // ======================================
 
+  // output
+
+  assign aw_id    = aw_id_r;
+  assign aw_addr  = aw_addr_r;
+  assign aw_len   = aw_len_r;
+  assign aw_size  = aw_size_r;
+  assign aw_burst = aw_burst_r;
+  assign aw_valid = aw_valid_r;
+
+  assign w_data   = w_data_r;
+  assign w_strb   = w_strb_r;
+  assign w_last   = w_last_r;
+  assign w_valid  = w_valid_r;
+
+  assign b_ready  = b_ready_r;
+
+  assign ack      = ack_r;
+
   always_comb begin
 
     // ======================================

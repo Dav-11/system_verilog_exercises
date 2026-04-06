@@ -138,6 +138,20 @@ module iconn_axi4_adapter_r #(
   // Combinational logic
   // ======================================
 
+  // output
+
+  assign ar_id    = ar_id_r;
+  assign ar_addr  = ar_addr_r;
+  assign ar_len   = ar_len_r;
+  assign ar_size  = ar_size_r;
+  assign ar_burst = ar_burst_r;
+  assign ar_valid = ar_valid_r;
+
+  assign r_ready  = r_ready_r;
+
+  assign ack      = ack_r;
+  assign data     = data_r;
+
   always_comb begin
 
     // ======================================

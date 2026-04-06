@@ -176,7 +176,7 @@ module tb_iconn_axi4_adapter;
       wdata <= d;
       wcyc  <= 1;
 
-      // Hold request until acknowledged
+      // Wait for ack
       do @(posedge clk); while (!wack);
 
       wcyc <= 0;
@@ -192,7 +192,7 @@ module tb_iconn_axi4_adapter;
       // Wait for ack
       do @(posedge clk); while (!rack);
 
-      d = rdata;  // ✅ now works
+      d = rdata;
 
       rcyc <= 0;
     end
