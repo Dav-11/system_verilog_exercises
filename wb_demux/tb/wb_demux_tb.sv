@@ -2,4 +2,4 @@
 
 module wb_mux_tb;
 
-endmodule: wb_mux_tb
+endmodule : wb_mux_tb

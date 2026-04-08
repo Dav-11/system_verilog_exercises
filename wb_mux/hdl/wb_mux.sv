@@ -9,10 +9,10 @@ module wb_mux #(
 
     //=============== INPUT ===============
 
-    input logic [N-1:0][NUM_MASTER-1:0]         in_ack,
+    input logic [N-1:0][        NUM_MASTER-1:0] in_ack,
     input logic [N-1:0][(BYTES_PER_LINE*8)-1:0] in_wdata,
-    input logic [N-1:0][MAIN_MEM_LINE_AW-1:0]   in_waddr,
-    input logic [N-1:0][MAIN_MEM_LINE_AW-1:0]   in_raddr,
+    input logic [N-1:0][  MAIN_MEM_LINE_AW-1:0] in_waddr,
+    input logic [N-1:0][  MAIN_MEM_LINE_AW-1:0] in_raddr,
     input logic [N-1:0]                         in_rcyc,
     input logic [N-1:0]                         in_wcyc,
 
@@ -26,13 +26,13 @@ module wb_mux #(
     output logic [N-1:0]                out_ack_dbiu2m,
 
 
-    .rcyc (rcyc),
-      .wcyc (wcyc),
-      .waddr(waddr),
-      .raddr(raddr),
-      .wdata(wdata),
+    .rcyc(rcyc),
+    .wcyc(wcyc),
+    .waddr(waddr),
+    .raddr(raddr),
+    .wdata(wdata),
 
-      .rdata(rdata)
+    .rdata(rdata)
 
 );
 
