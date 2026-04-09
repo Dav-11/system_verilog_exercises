@@ -55,7 +55,7 @@ TB_TOP = \
 	tb/axi_ram.sv
 
 # SRC = $(TB_IF) $(DUT) $(UVM_ENV) $(TB_TOP)
-SRC = $(TB_IF) $(DUT) $(TB_TOP)
+SRC = $(DUT) $(TB_TOP)
 
 #################################
 # TARGETS
