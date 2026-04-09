@@ -5,6 +5,9 @@
 module fixed_pri_arbiter_linear #(
     parameter N = 32
 ) (
+    // input logic clk,
+    // input logic rst_n,
+
     input  logic [N-1:0] req,
     output logic [N-1:0] gnt
 );

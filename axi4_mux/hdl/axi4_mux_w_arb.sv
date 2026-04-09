@@ -1,4 +1,4 @@
-module axi4_mux_r_arb #(
+module axi4_mux_w_arb #(
     parameter int RR_PRIO_NUMBER = 4,
     parameter int FIXED_PRIO_NUMBER = 1,
     localparam int INPUT_NUMBER = RR_PRIO_NUMBER + FIXED_PRIO_NUMBER
@@ -6,12 +6,11 @@ module axi4_mux_r_arb #(
     input logic clk,
     input logic rst_n,
 
-    input logic [INPUT_NUMBER-1:0] in_ar_valid,
+    input logic [INPUT_NUMBER-1:0] in_aw_valid,
 
-    input logic out_ar_ready,
-    input logic out_r_last,
-    input logic out_r_valid,
-    input logic out_r_ready,
+    input logic out_aw_ready,
+    input logic out_b_valid,
+    input logic out_b_ready,
 
     output logic [INPUT_NUMBER-1:0] sel
 );
@@ -65,7 +64,7 @@ module axi4_mux_r_arb #(
   // ======================================
 
   // internal signals
-  assign {rr_req, fixed_req} = in_ar_valid & {INPUT_NUMBER{out_ar_ready}};
+  assign {rr_req, fixed_req} = in_aw_valid & {INPUT_NUMBER{out_aw_ready}};
 
   assign rr_has_req = |rr_req;
   assign fixed_has_req = |fixed_req;
@@ -100,7 +99,7 @@ module axi4_mux_r_arb #(
 
       BUSY: begin
 
-        if (out_r_valid && out_r_ready && out_r_last) begin
+        if (out_b_valid && out_b_ready) begin
 
           // back to idle (tx is completed)
           state_n = IDLE;
@@ -135,4 +134,4 @@ module axi4_mux_r_arb #(
       .gnt(rr_gnt)
   );
 
-endmodule : axi4_mux_r_arb
+endmodule : axi4_mux_w_arb

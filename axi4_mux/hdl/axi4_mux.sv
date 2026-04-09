@@ -98,6 +98,143 @@ module axi4_mux #(
 );
 
   logic [INPUT_NUMBER-1:0] sel_r, sel_w;
-  logic busy_r, busy_w;
+
+  // ======================================
+  // READ FLOW
+  // ======================================
+
+  axi4_mux_r_arb #(
+      .RR_PRIO_NUMBER(RR_PRIO_NUMBER),
+      .FIXED_PRIO_NUMBER(FIXED_PRIO_NUMBER)
+  ) arb_r (
+      .clk  (clk),
+      .rst_n(rst_n),
+
+      .in_ar_valid(in_ar_valid),
+      .out_r_last (out_r_last),
+      .out_r_valid(out_r_valid),
+      .out_r_ready(out_r_ready),
+
+      .sel(sel_r)
+  );
+
+  axi4_mux_r #(
+      .AW(AW),
+      .AXI_ID_WIDTH(AXI_ID_WIDTH),
+      .AXI_DATA_WIDTH(AXI_DATA_WIDTH),
+      .RR_PRIO_NUMBER(RR_PRIO_NUMBER),
+      .FIXED_PRIO_NUMBER(FIXED_PRIO_NUMBER)
+  ) mux_r (
+      .sel(sel_r),
+
+      .in_ar_id(in_ar_id),
+      .in_ar_addr(in_ar_addr),
+      .in_ar_len(in_ar_len),
+      .in_ar_size(in_ar_size),
+      .in_ar_burst(in_ar_burst),
+      .in_ar_valid(in_ar_valid),
+      .in_ar_ready(in_ar_ready),
+
+      .in_r_id(in_r_id),
+      .in_r_data(in_r_data),
+      .in_r_resp(in_r_resp),
+      .in_r_last(in_r_last),
+      .in_r_valid(in_r_valid),
+      .in_r_ready(in_r_ready),
+
+      .out_ar_id(out_ar_id),
+      .out_ar_addr(out_ar_addr),
+      .out_ar_len(out_ar_len),
+      .out_ar_size(out_ar_size),
+      .out_ar_burst(out_ar_burst),
+      .out_ar_valid(out_ar_valid),
+      .out_ar_ready(out_ar_ready),
+
+      .out_r_id(out_r_id),
+      .out_r_data(out_r_data),
+      .out_r_resp(out_r_resp),
+      .out_r_last(out_r_last),
+      .out_r_valid(out_r_valid),
+      .out_r_ready(out_r_ready)
+  );
+
+  // ======================================
+  // WRITE FLOW
+  // ======================================
+
+  axi4_mux_w_arb #(
+      .RR_PRIO_NUMBER(RR_PRIO_NUMBER),
+      .FIXED_PRIO_NUMBER(FIXED_PRIO_NUMBER)
+  ) arb_w (
+      .clk  (clk),
+      .rst_n(rst_n),
+
+      .in_aw_valid(in_aw_valid),
+
+      .out_b_valid(out_b_valid),
+      .out_b_ready(out_b_ready),
+
+      .sel(sel_w)
+  );
+
+  axi4_mux_w #(
+      .AW(AW),
+      .AXI_ID_WIDTH(AXI_ID_WIDTH),
+      .AXI_DATA_WIDTH(AXI_DATA_WIDTH),
+      .RR_PRIO_NUMBER(RR_PRIO_NUMBER),
+      .FIXED_PRIO_NUMBER(FIXED_PRIO_NUMBER)
+  ) mux_w (
+      .sel(sel_w),
+
+      // ================= AXI SLAVE SIDE =================
+
+      // Write address
+      .in_aw_id   (in_aw_id),
+      .in_aw_addr (in_aw_addr),
+      .in_aw_len  (in_aw_len),
+      .in_aw_size (in_aw_size),
+      .in_aw_burst(in_aw_burst),
+      .in_aw_valid(in_aw_valid),
+      .in_aw_ready(in_aw_ready),
+
+      // Write data
+      .in_w_data (in_w_data),
+      .in_w_strb (in_w_strb),
+      .in_w_last (in_w_last),
+      .in_w_valid(in_w_valid),
+      .in_w_ready(in_w_ready),
+
+      // Write response
+      .in_b_id   (in_b_id),
+      .in_b_resp (in_b_resp),
+      .in_b_valid(in_b_valid),
+      .in_b_ready(in_b_ready),
+
+      // ================= AXI MASTER SIDE =================
+
+      // Write address
+      .out_aw_id   (out_aw_id),
+      .out_aw_addr (out_aw_addr),
+      .out_aw_len  (out_aw_len),
+      .out_aw_size (out_aw_size),
+      .out_aw_burst(out_aw_burst),
+      .out_aw_valid(out_aw_valid),
+      .out_aw_ready(out_aw_ready),
+
+      // Write data
+      .out_w_data (out_w_data),
+      .out_w_strb (out_w_strb),
+      .out_w_last (out_w_last),
+      .out_w_valid(out_w_valid),
+      .out_w_ready(out_w_ready),
+
+      // Write response
+      .out_b_id   (out_b_id),
+      .out_b_resp (out_b_resp),
+      .out_b_valid(out_b_valid),
+      .out_b_ready(out_b_ready)
+  );
+
+
 
 endmodule : axi4_mux

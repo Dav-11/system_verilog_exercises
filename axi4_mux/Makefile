@@ -23,7 +23,7 @@ VIVADO_FLAGS ?= -tclbatch
 
 VERILATOR ?= verilator
 VERILATOR_FLAGS ?= --cc --exe --build
-VERILATOR_TOP = tb_cpu_axi4_adapter
+VERILATOR_TOP = tb_axi4_mux
 
 TOOL ?= questa
 
@@ -38,6 +38,12 @@ TB_IF = \
 
 # DUT
 DUT = \
+	hdl/fixed_pri_arbiter_linear.sv \
+	hdl/rr_arbiter_linear_scan.sv \
+	hdl/axi4_mux_r_arb.sv \
+	hdl/axi4_mux_r.sv \
+	hdl/axi4_mux_w_arb.sv \
+	hdl/axi4_mux_w.sv \
 	hdl/axi4_mux.sv
 
 # UVM ENV
