@@ -2,7 +2,7 @@
 # VARS
 #################################
 
-TB       ?= tb_cpu_axi4_adapter
+TB       ?= tb_axi4_mux
 
 QUESTA   ?= vsim
 QUESTA_UVM ?= /eda/Siemens/2024-25/RHELx86/QUESTA-CORE-PRIME_2024.3/questasim/verilog_src/uvm-1.2/src
@@ -23,7 +23,7 @@ VIVADO_FLAGS ?= -tclbatch
 
 VERILATOR ?= verilator
 VERILATOR_FLAGS ?= --cc --exe --build
-VERILATOR_TOP = tb_axi4_mux
+VERILATOR_TOP = $(TB)
 
 TOOL ?= questa
 
