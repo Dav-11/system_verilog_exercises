@@ -110,7 +110,9 @@ module axi4_mux #(
       .clk  (clk),
       .rst_n(rst_n),
 
-      .in_ar_valid(in_ar_valid),
+      .in_ar_valid (in_ar_valid),
+      .out_ar_ready(out_ar_ready),
+
       .out_r_last (out_r_last),
       .out_r_valid(out_r_valid),
       .out_r_ready(out_r_ready),
@@ -169,7 +171,8 @@ module axi4_mux #(
       .clk  (clk),
       .rst_n(rst_n),
 
-      .in_aw_valid(in_aw_valid),
+      .in_aw_valid (in_aw_valid),
+      .out_aw_ready(out_aw_ready),
 
       .out_b_valid(out_b_valid),
       .out_b_ready(out_b_ready),

@@ -233,14 +233,14 @@ module tb_axi4_mux;
   // DEFAULTS
   // --------------------------------------
   initial begin
-    clk   = 0;
+    clk = 0;
 
     in_aw_valid = '0;
-    in_w_valid  = '0;
-    in_b_ready  = '1;
+    in_w_valid = '0;
+    in_b_ready = '1;
 
     in_ar_valid = '0;
-    in_r_ready  = '1;
+    in_r_ready = '1;
   end
 
   // --------------------------------------
@@ -302,7 +302,7 @@ module tb_axi4_mux;
   // TEST
   // --------------------------------------
   initial begin
-    
+
     // initial reset
     rst_n = 0;
     repeat (5) @(posedge clk);
