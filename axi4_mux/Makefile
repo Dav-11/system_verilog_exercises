@@ -11,6 +11,8 @@ VMAP     ?= vmap
 VLIB     ?= vlib
 WORK     ?= work
 
+QUESTA_WAVE_DO_CMD :=
+
 VLOG_FLAGS ?= -sv +acc
 VSIM_FLAGS ?= -c -t 1ns -do "run -all; quit -f"
 
@@ -30,6 +32,12 @@ TOOL ?= questa
 #################################
 # SOURCE FILES
 #################################
+
+QUESTA_WAVE ?= wave.do
+
+ifneq ($(wildcard $(QUESTA_WAVE)),)
+QUESTA_WAVE_DO_CMD = do $(QUESTA_WAVE);
+endif
 
 # Interfaces
 TB_IF = \
@@ -142,11 +150,11 @@ vsim: questa_run
 
 .PHONY: vsim_gui
 vsim_gui: questa_build
-	$(QUESTA) -t 1ns -do "log -r /*; run -all" $(TB)
+	$(QUESTA) -t 1ns -do "log -r /*; $(WAVE_DO_CMD) run -all" $(TB)
 
 .PHONY: vsim_vcd
 vsim_vcd: questa_build
-	$(QUESTA) -c -t 1ns -do "vcd file waves_questa.vcd; vcd add -r /*; run -all; quit -f" $(TB)
+	$(QUESTA) -c -t 1ns -do "vcd file waves_questa.vcd; vcd add -r /*; $(WAVE_DO_CMD) run -all; quit -f" $(TB)
 
 #################################
 # Xcelium
