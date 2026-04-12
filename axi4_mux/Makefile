@@ -33,7 +33,7 @@ TOOL ?= questa
 # SOURCE FILES
 #################################
 
-QUESTA_WAVE ?= wave.do
+QUESTA_WAVE ?= waves.do
 
 ifneq ($(wildcard $(QUESTA_WAVE)),)
 QUESTA_WAVE_DO_CMD = do $(QUESTA_WAVE);
