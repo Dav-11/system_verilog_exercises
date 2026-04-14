@@ -46,13 +46,13 @@ TB_IF = \
 
 # DUT
 DUT = \
-	hdl/fixed_pri_arbiter_linear.sv \
-	hdl/rr_arbiter_linear_scan.sv \
-	hdl/axi4_mux_r_arb.sv \
-	hdl/axi4_mux_r.sv \
-	hdl/axi4_mux_w_arb.sv \
-	hdl/axi4_mux_w.sv \
-	hdl/axi4_mux.sv
+	rtl/fixed_pri_arbiter_linear.sv \
+	rtl/rr_arbiter_linear_scan.sv \
+	rtl/axi4_mux_r_arb.sv \
+	rtl/axi4_mux_r.sv \
+	rtl/axi4_mux_w_arb.sv \
+	rtl/axi4_mux_w.sv \
+	rtl/axi4_mux.sv
 
 # UVM ENV
 UVM_ENV = $(shell find tb/uvm_env -name '*.sv')

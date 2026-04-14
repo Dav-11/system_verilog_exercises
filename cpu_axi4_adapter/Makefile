@@ -38,7 +38,7 @@ TB_IF = \
 
 # DUT
 DUT = \
-	hdl/cpu_axi4_adapter.sv
+	rtl/cpu_axi4_adapter.sv
 
 # UVM ENV
 UVM_ENV = $(shell find tb/uvm_env -name '*.sv')

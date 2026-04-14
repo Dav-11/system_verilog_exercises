@@ -3,9 +3,9 @@
 # Source files
 TOP := mem_hw
 VERILOG_SOURCES := \
-	hdl/param_pkg.sv \
-	hdl/dp_ram_clk.sv \
-	hdl/mem_hw.sv
+	rtl/param_pkg.sv \
+	rtl/dp_ram_clk.sv \
+	rtl/mem_hw.sv
 
 MEM_FILE := my_mem_init.hex
 
