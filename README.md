@@ -1,4 +1,5 @@
-# System Verilog Tests
+# System Verilog Exercises
+
 
 ## Tools
 - Icarus Verilog
