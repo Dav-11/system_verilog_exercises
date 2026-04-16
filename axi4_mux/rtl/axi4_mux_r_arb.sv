@@ -65,6 +65,7 @@ module axi4_mux_r_arb #(
   // ======================================
 
   // internal signals
+  // TODO: check if out_ar_ready is necessary or remove
   assign {rr_req, fixed_req} = in_ar_valid & {INPUT_NUMBER{out_ar_ready}};
 
   assign rr_has_req = |rr_req;

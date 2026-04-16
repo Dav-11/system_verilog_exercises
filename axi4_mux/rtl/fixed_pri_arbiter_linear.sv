@@ -22,7 +22,7 @@ module fixed_pri_arbiter_linear #(
   // Combinational logic
   // ======================================
 
-  assign higher_pri_req[0] = 1'b0;  //LSB has the highest priority
+  assign higher_pri_req[0] = 1'b0;  // LSB has the highest priority
 
   generate
     for (genvar i = 0; i < N - 1; i++) begin : gen_prefix
